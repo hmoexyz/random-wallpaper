@@ -1,0 +1,3 @@
+- 随机横屏壁纸：https://hmoexyz.qzz.io/api/image/random
+- 随机竖屏壁纸：https://hmoexyz.qzz.io/api/image/random?type=vertical-wallpaper
+- 随机表情包：https://hmoexyz.qzz.io/api/image/random?type=meme
