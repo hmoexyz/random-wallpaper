@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>随机壁纸 · 接口说明</title>
+  <style>
+    /* 全局重置与基础样式 */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      background-color: #0a0c0f; /* 深色底衬，防止加载时闪白 */
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      transition: background-image 0.3s ease, background-color 0.2s;
+      padding: 1.5rem;
+    }
+
+    /* 半透明玻璃卡片 */
+    .glass-card {
+      background: rgba(20, 25, 32, 0.65);
+      backdrop-filter: blur(12px) saturate(180%);
+      -webkit-backdrop-filter: blur(12px) saturate(180%);
+      border-radius: 2rem;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 25px 40px -12px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05);
+      max-width: 780px;
+      width: 100%;
+      padding: 2.5rem 2.2rem;
+      color: #f0f3f8;
+      transition: all 0.2s;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+    }
+
+    /* 标题区域 */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .header h1 {
+      font-size: 2rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #ffffff, #d0d9f0);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      display: inline-block;
+    }
+
+    .badge {
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 100px;
+      padding: 0.35rem 1rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      white-space: nowrap;
+    }
+
+    /* 接口地址卡片 */
+    .endpoint {
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 1.2rem;
+      padding: 1.1rem 1.4rem;
+      margin: 1.6rem 0 1.8rem;
+      border-left: 5px solid #6aa6ff;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.8rem 1rem;
+      word-break: break-all;
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    .method {
+      background: #2e7d32;
+      font-weight: 700;
+      font-size: 0.8rem;
+      padding: 0.25rem 0.8rem;
+      border-radius: 40px;
+      letter-spacing: 0.3px;
+      color: white;
+      text-shadow: none;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .url {
+      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: #c6e0ff;
+      background: rgba(0, 0, 0, 0.25);
+      padding: 0.25rem 0.6rem;
+      border-radius: 0.6rem;
+      flex: 1;
+      word-break: break-all;
+    }
+
+    /* 描述与特性 */
+    .description {
+      font-size: 1.05rem;
+      line-height: 1.6;
+      margin-bottom: 1.8rem;
+      color: #d3dcec;
+      font-weight: 400;
+    }
+
+    .feature-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .feature-item {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 1rem;
+      padding: 0.7rem 1.2rem;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(4px);
+    }
+
+    .feature-item span {
+      font-size: 1.1rem;
+    }
+
+    /* 按钮区域 */
+    .action-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+
+    .btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      font-weight: 500;
+      font-size: 1rem;
+      padding: 0.85rem 1.8rem;
+      border-radius: 3rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      transition: all 0.2s ease;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 8px 18px -6px rgba(0, 0, 0, 0.4);
+      letter-spacing: 0.2px;
+      flex: 0 1 auto;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+      border-color: rgba(255, 255, 255, 0.45);
+      transform: scale(1.02);
+      box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.6);
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-primary {
+      background: #3b6eff;
+      border-color: #6d96ff;
+      box-shadow: 0 10px 20px -8px #1e3a8a;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: #4d7aff;
+      border-color: #8aa9ff;
+    }
+
+    .btn-icon {
+      font-size: 1.25rem;
+      line-height: 1;
+    }
+
+    .hint {
+      font-size: 0.9rem;
+      color: #a7b7d0;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .hint kbd {
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 6px;
+      padding: 0.2rem 0.6rem;
+      font-family: monospace;
+      font-size: 0.85rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    /* 加载状态遮罩 */
+    .loading-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .loading-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid rgba(255, 255, 255, 0.2);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* 响应式 */
+    @media (max-width: 550px) {
+      .glass-card {
+        padding: 1.8rem 1.5rem;
+      }
+      .header h1 {
+        font-size: 1.6rem;
+      }
+      .btn {
+        padding: 0.7rem 1.2rem;
+        font-size: 0.95rem;
+      }
+      .action-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .btn {
+        justify-content: center;
+      }
+    }
+
+    /* 背景图片加载失败时的兜底 */
+    body.fallback-bg {
+      background-image: linear-gradient(145deg, #1a1f2b, #0f1218);
+    }
+  </style>
+</head>
+<body id="appBody">
+
+  <!-- 加载指示器 -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- 主卡片 -->
+  <main class="glass-card">
+    <div class="header">
+      <h1>📸 随机壁纸接口</h1>
+      <div class="badge">v1 · 开放</div>
+    </div>
+
+    <!-- 接口地址展示 -->
+    <div class="endpoint">
+      <span class="method">GET</span>
+      <span class="url">https://hmoexyz.qzz.io/api/image/random</span>
+    </div>
+
+    <!-- 描述 -->
+    <div class="description">
+      调用该接口将返回一张随机图片。<br>
+      响应速度快，适合作为随机壁纸、占位图或每日一图。
+    </div>
+
+    <!-- 特性标签 -->
+    <div class="feature-grid">
+      <div class="feature-item"><span>🖼️</span> 高清随机图片</div>
+      <div class="feature-item"><span>⚡</span> 极速响应</div>
+      <div class="feature-item"><span>🔄</span> 每次调用都不同</div>
+      <div class="feature-item"><span>🌐</span> 无需鉴权</div>
+    </div>
+
+    <!-- 操作按钮 + 提示 -->
+    <div class="action-bar">
+      <button class="btn btn-primary" id="refreshBtn">
+        <span class="btn-icon">🎲</span> 随机切换壁纸
+      </button>
+      <div class="hint">
+        <span>⏎</span> 点击按钮或按 <kbd>R</kbd> 键切换背景
+      </div>
+    </div>
+  </main>
+
+  <script>
+    (function() {
+      // 获取DOM元素
+      const body = document.getElementById('appBody');
+      const refreshBtn = document.getElementById('refreshBtn');
+      const loadingOverlay = document.getElementById('loadingOverlay');
+
+      // 接口地址
+      const API_URL = 'https://hmoexyz.qzz.io/api/image/random';
+
+      // 加载动画最短展示时间（毫秒），保证用户能感知到
+      const MIN_LOADING_TIME = 400;
+      // 遮罩淡出过渡时长（与 CSS transition 保持一致）
+      const FADE_OUT_DURATION = 200;
+
+      // 防止重复点击 / 加载状态标记
+      let isLoading = false;
+
+      // 显示加载遮罩
+      function showLoading() {
+        loadingOverlay.classList.add('active');
+      }
+
+      // 隐藏加载遮罩
+      function hideLoading() {
+        loadingOverlay.classList.remove('active');
+      }
+
+      // 等待浏览器完成两帧绘制，确保样式变更真正渲染到屏幕上
+      function waitForPaint() {
+        return new Promise(resolve => {
+          requestAnimationFrame(() => {
+            requestAnimationFrame(resolve);
+          });
+        });
+      }
+
+      // 从接口获取随机图片URL，并设置为背景
+      async function fetchRandomBackground() {
+        if (isLoading) return; // 避免并发请求
+
+        isLoading = true;
+        refreshBtn.disabled = true;
+
+        const startTime = Date.now();
+        showLoading();
+
+        try {
+          // ★ 关键1：先生成最终要用的 URL（带时间戳防缓存）
+          //   预加载和背景设置都必须使用这同一个 URL，才能命中缓存
+          const bgUrl = API_URL.includes('?')
+            ? `${API_URL}&t=${Date.now()}`
+            : `${API_URL}?t=${Date.now()}`;
+
+          // 用完全相同的 URL 进行预加载
+          const preloadImg = new Image();
+
+          const imageLoadPromise = new Promise((resolve, reject) => {
+            preloadImg.onload = () => resolve();
+            preloadImg.onerror = () => reject(new Error('图片加载失败'));
+          });
+
+          preloadImg.src = bgUrl;
+
+          // 超时保护，避免一直卡在加载中
+          const timeoutPromise = new Promise((_, reject) => {
+            setTimeout(() => reject(new Error('请求超时')), 15000);
+          });
+
+          await Promise.race([imageLoadPromise, timeoutPromise]);
+
+          // 预加载成功，图片已在浏览器缓存中
+          // 由于 URL 完全相同，设置背景时会立即从缓存读取并绘制
+          body.style.backgroundImage = `url('${bgUrl}')`;
+          body.classList.remove('fallback-bg');
+
+          // ★ 关键2：等待浏览器完成两帧绘制
+          //   确保新背景真正渲染到屏幕上后，才继续往下走隐藏遮罩
+          await waitForPaint();
+
+        } catch (error) {
+          console.warn('获取随机背景失败:', error);
+          // 加载失败时显示兜底渐变背景
+          body.style.backgroundImage = 'linear-gradient(145deg, #1a1f2b, #0f1218)';
+          body.classList.add('fallback-bg');
+
+          // 按钮短暂提示失败
+          refreshBtn.innerHTML = '<span class="btn-icon">⚠️</span> 加载失败，重试';
+          setTimeout(() => {
+            refreshBtn.innerHTML = '<span class="btn-icon">🎲</span> 随机切换壁纸';
+          }, 2000);
+
+        } finally {
+          // 计算已经过去的时间，补足最小展示时间
+          const elapsed = Date.now() - startTime;
+          if (elapsed < MIN_LOADING_TIME) {
+            await new Promise(resolve =>
+              setTimeout(resolve, MIN_LOADING_TIME - elapsed)
+            );
+          }
+
+          // 隐藏遮罩（开始淡出）
+          hideLoading();
+
+          // 等淡出动画完成后再解锁状态，避免过渡期间被误触
+          setTimeout(() => {
+            isLoading = false;
+            refreshBtn.disabled = false;
+          }, FADE_OUT_DURATION);
+        }
+      }
+
+      // 初始化：加载第一张随机背景
+      fetchRandomBackground();
+
+      // 按钮点击事件
+      refreshBtn.addEventListener('click', () => {
+        fetchRandomBackground();
+      });
+
+      // 键盘快捷键 'R' 或 'r' 刷新
+      window.addEventListener('keydown', (e) => {
+        // 忽略输入框等元素
+        const tag = document.activeElement?.tagName?.toLowerCase();
+        if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
+
+        if (e.key === 'r' || e.key === 'R') {
+          e.preventDefault(); // 避免触发浏览器刷新
+          fetchRandomBackground();
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
